@@ -18,8 +18,8 @@ export const safeStorage = {
 
     try {
       return await AsyncStorage.getItem(key);
-    } catch (e) {
-      console.warn('[Storage Warning] AsyncStorage.getItem failed, using memory store fallback:', e);
+    } catch {
+      // Silent fallback to memory store
       return memoryStore[key] || null;
     }
   },
@@ -40,8 +40,8 @@ export const safeStorage = {
 
     try {
       await AsyncStorage.setItem(key, value);
-    } catch (e) {
-      console.warn('[Storage Warning] AsyncStorage.setItem failed, using memory store fallback:', e);
+    } catch {
+      // Silent fallback to memory store
       memoryStore[key] = value;
     }
   },
@@ -62,8 +62,8 @@ export const safeStorage = {
 
     try {
       await AsyncStorage.removeItem(key);
-    } catch (e) {
-      console.warn('[Storage Warning] AsyncStorage.removeItem failed, using memory store fallback:', e);
+    } catch {
+      // Silent fallback to memory store
       delete memoryStore[key];
     }
   },
