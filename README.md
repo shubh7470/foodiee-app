@@ -1,56 +1,90 @@
-# Welcome to your Expo app 👋
+# Foodiee App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Project Overview
+Foodiee is a modern, responsive food delivery application built using React Native and Expo. It provides a seamless user experience from onboarding to ordering, featuring dynamic restaurant menus, a global cart system, persistent authentication, and an interactive drawer for profile settings. The app is fully typed with TypeScript and is configured for both native mobile platforms (iOS/Android) and the web.
 
-## Get started
+## Tech Stack
+- **Framework:** Expo & React Native
+- **Routing:** Expo Router (File-based routing, Typed routes, Unstable Native Tabs)
+- **Language:** TypeScript
+- **Styling:** React Native Stylesheet (Vanilla CSS on Web, animated components)
+- **State Management:** React Context API (`AuthProvider`, `CartProvider`)
+- **Storage:** `@react-native-async-storage/async-storage` (with an intelligent in-memory fallback helper)
+- **Icons:** `@expo/vector-icons` (Ionicons) & custom icons
 
-1. Install dependencies
+## How to Run Locally
 
+### Prerequisites
+- Node.js (v18+)
+- npm or yarn
+
+### Installation
+1. Clone the repository and navigate to the project directory:
+   ```bash
+   cd foodiee
+   ```
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Start the app
+### Running the App
+- **Start the Expo Dev Server:**
+  ```bash
+  npm start
+  ```
+- **Run on Web:**
+  ```bash
+  npm run web
+  ```
+- **Run on Android/iOS Emulator:**
+  ```bash
+  npm run android
+  npm run ios
+  ```
 
-   ```bash
-   npx expo start
-   ```
+### Code Quality Checks
+- **Type Checking:** `npx tsc --noEmit`
+- **Linting:** `npm run lint`
 
-In the output, you'll find options to open the app in a
+## Navigation Structure
+The application utilizes Expo Router with an intelligent authentication gating mechanism:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **Root Layout (`_layout.tsx`):** Wraps the app in Context Providers. Checks authentication state; routes unauthenticated users to the auth flow, and authenticated users to the main application tabs.
+- **Auth Flow:**
+  - `(auth)/onboarding`: Welcome and feature introduction screens.
+  - `(auth)/login`: User login screen.
+  - `(auth)/register`: User registration screen.
+- **Main App (Native Tabs):**
+  - **Home (`/`):** Dashboard with categories, popular items, and a quick cart access header.
+  - **Search (`/search`):** Search functionality with trending cuisines.
+  - **Orders (`/orders`):** Order history and active order tracking (features a notification badge).
+  - **Profile (`/profile`):** User profile details via an animated slide-in drawer.
+- **Deep/Dynamic Routes:**
+  - `restaurant/[id]`: Dynamic detail page showcasing individual restaurant menus.
+  - `/cart`: Checkout flow calculating totals (including GST and delivery fees in Rupees).
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Deep Linking Setup
+The app is configured for deep linking using the `foodiee://` scheme. 
+Deep linking is automatically mapped to Expo Router paths. For example, a link to a specific restaurant will look like:
+`foodiee://restaurant/1`
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+Configuration is located in `app.json`:
+```json
+{
+  "expo": {
+    "scheme": "foodiee",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Screenshots
+*(Add real application screenshots here once deployed or captured from the simulator)*
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Assumptions Made
+1. **Authentication Storage:** We assume `AsyncStorage` might not always have its native bindings fully linked in every dev client environment. Therefore, a custom `safeStorage` helper was implemented to silently fall back to an in-memory runtime store (or `localStorage` on the web) to prevent fatal red-screen crashes.
+2. **Pricing Currency:** All prices are hardcoded to display in Indian Rupees (`Rs.`).
+3. **Tab Icons:** We assume `@expo/vector-icons` (Ionicons) provides the highest fidelity on native tab bars compared to inline SVGs or raw PNGs. Custom SVG markup is avoided for tab triggers in favor of native VectorIcon components.
